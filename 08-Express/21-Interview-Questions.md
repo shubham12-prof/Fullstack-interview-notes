@@ -16,8 +16,9 @@ No — it's a lightweight, unopinionated framework. It doesn't enforce project s
 An instance of `http.Server`, which can be stored and later closed (`server.close()`).
 
 **Q: How do you disable the `X-Powered-By` header?**
+
 ```js
-app.disable('x-powered-by');
+app.disable("x-powered-by");
 ```
 
 ---
@@ -34,8 +35,9 @@ It processes middleware and routes in registration order, matching HTTP method +
 A mini, mountable route handler used to split routes into modules and mount them under a common path prefix (`app.use('/users', userRouter)`), keeping the main app file clean.
 
 **Q: How do you handle a route parameter with a regex constraint?**
+
 ```js
-app.get('/users/:id(\\d+)', handler); // only matches numeric IDs
+app.get("/users/:id(\\d+)", handler); // only matches numeric IDs
 ```
 
 ---
@@ -58,7 +60,8 @@ Call `next(err)` with any truthy value — Express skips remaining regular middl
 Because a rejected promise inside an `async` function isn't automatically caught by Express 4's synchronous internals — you must catch it and call `next(err)` yourself, or wrap it in a helper. Express 5 fixes this natively.
 
 ```js
-const asyncHandler = fn => (req, res, next) => Promise.resolve(fn(req, res, next)).catch(next);
+const asyncHandler = (fn) => (req, res, next) =>
+  Promise.resolve(fn(req, res, next)).catch(next);
 ```
 
 **Q: How does Express identify error-handling middleware?**
@@ -91,16 +94,21 @@ Because the direct connection is from the proxy, not the real client — you nee
 No — since Express 4.16+, `express.json()` and `express.urlencoded()` are built in.
 
 **Q: How do you serve static files?**
+
 ```js
-app.use(express.static('public'));
+app.use(express.static("public"));
 ```
+
 Files inside `public/` become accessible directly by their relative path.
 
 **Q: How do you serve a React/Vue production build with client-side routing?**
 Serve the static build folder, then add a catch-all route serving `index.html` for unmatched paths (placed after all API routes):
+
 ```js
-app.use(express.static('build'));
-app.get('/{*splat}', (req, res) => res.sendFile(path.join(__dirname, 'build/index.html')));
+app.use(express.static("build"));
+app.get("/{*splat}", (req, res) =>
+  res.sendFile(path.join(__dirname, "build/index.html")),
+);
 ```
 
 ---
@@ -189,22 +197,24 @@ Keep shared business logic (models, services) version-agnostic; branch only at t
 ## Practical / Coding Questions Often Asked Live
 
 **Q: Write a simple Express server with one GET and one POST route.**
+
 ```js
-const express = require('express');
+const express = require("express");
 const app = express();
 app.use(express.json());
 
-app.get('/health', (req, res) => res.json({ status: 'ok' }));
-app.post('/echo', (req, res) => res.json({ received: req.body }));
+app.get("/health", (req, res) => res.json({ status: "ok" }));
+app.post("/echo", (req, res) => res.json({ received: req.body }));
 
-app.listen(3000, () => console.log('Running on port 3000'));
+app.listen(3000, () => console.log("Running on port 3000"));
 ```
 
 **Q: Write middleware that logs the time taken for each request.**
+
 ```js
 app.use((req, res, next) => {
   const start = Date.now();
-  res.on('finish', () => {
+  res.on("finish", () => {
     console.log(`${req.method} ${req.originalUrl} - ${Date.now() - start}ms`);
   });
   next();
@@ -212,24 +222,26 @@ app.use((req, res, next) => {
 ```
 
 **Q: Write an authentication middleware that checks a Bearer token.**
+
 ```js
 function authenticate(req, res, next) {
-  const token = req.headers.authorization?.split(' ')[1];
-  if (!token) return res.status(401).json({ error: 'No token provided' });
+  const token = req.headers.authorization?.split(" ")[1];
+  if (!token) return res.status(401).json({ error: "No token provided" });
   try {
     req.user = verifyToken(token);
     next();
   } catch {
-    res.status(401).json({ error: 'Invalid token' });
+    res.status(401).json({ error: "Invalid token" });
   }
 }
 ```
 
 **Q: Write a centralized error handler.**
+
 ```js
 app.use((err, req, res, next) => {
   const status = err.statusCode || 500;
-  res.status(status).json({ error: err.message || 'Internal Server Error' });
+  res.status(status).json({ error: err.message || "Internal Server Error" });
 });
 ```
 

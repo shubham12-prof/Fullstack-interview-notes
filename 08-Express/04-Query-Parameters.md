@@ -11,7 +11,7 @@ Query parameters (query strings) are key-value pairs appended to a URL after a `
 Express parses these automatically into `req.query`.
 
 ```js
-app.get('/products', (req, res) => {
+app.get("/products", (req, res) => {
   console.log(req.query);
   // { category: 'shoes', sort: 'price', page: '2' }
   res.json(req.query);
@@ -23,7 +23,7 @@ app.get('/products', (req, res) => {
 ## Basic Usage
 
 ```js
-app.get('/search', (req, res) => {
+app.get("/search", (req, res) => {
   const { q, limit = 10, page = 1 } = req.query;
   res.json({
     query: q,
@@ -50,7 +50,7 @@ Express (via the `qs` library, its default query parser) supports bracket-style 
 ```
 
 ```js
-app.get('/filter', (req, res) => {
+app.get("/filter", (req, res) => {
   console.log(req.query.tags); // ['red', 'blue']
   res.json(req.query);
 });
@@ -81,9 +81,10 @@ console.log(req.query.user); // { name: 'alice', age: '30' }
 Express lets you configure how query strings are parsed:
 
 ```js
-app.set('query parser', 'simple');    // uses Node's built-in querystring — no nested objects
-app.set('query parser', 'extended');  // default, uses 'qs' — supports nested objects/arrays
-app.set('query parser', (str) => {    // custom parser function
+app.set("query parser", "simple"); // uses Node's built-in querystring — no nested objects
+app.set("query parser", "extended"); // default, uses 'qs' — supports nested objects/arrays
+app.set("query parser", (str) => {
+  // custom parser function
   return new URLSearchParams(str);
 });
 ```
@@ -91,25 +92,25 @@ app.set('query parser', (str) => {    // custom parser function
 ## Real-World Pattern: Filtering, Sorting, Pagination
 
 ```js
-const express = require('express');
+const express = require("express");
 const app = express();
 
 const products = [
-  { id: 1, name: 'Shoe', category: 'footwear', price: 50 },
-  { id: 2, name: 'Shirt', category: 'apparel', price: 20 },
-  { id: 3, name: 'Boot', category: 'footwear', price: 80 },
+  { id: 1, name: "Shoe", category: "footwear", price: 50 },
+  { id: 2, name: "Shirt", category: "apparel", price: 20 },
+  { id: 3, name: "Boot", category: "footwear", price: 80 },
 ];
 
-app.get('/products', (req, res) => {
+app.get("/products", (req, res) => {
   let results = [...products];
 
   // Filtering
   if (req.query.category) {
-    results = results.filter(p => p.category === req.query.category);
+    results = results.filter((p) => p.category === req.query.category);
   }
 
   // Sorting
-  if (req.query.sort === 'price') {
+  if (req.query.sort === "price") {
     results.sort((a, b) => a.price - b.price);
   }
 
@@ -137,10 +138,10 @@ Example request: `GET /products?category=footwear&sort=price&page=1&limit=1`
 Query params are user input — validate before trusting them.
 
 ```js
-app.get('/products', (req, res) => {
+app.get("/products", (req, res) => {
   const page = parseInt(req.query.page, 10);
   if (req.query.page && (isNaN(page) || page < 1)) {
-    return res.status(400).json({ error: 'page must be a positive integer' });
+    return res.status(400).json({ error: "page must be a positive integer" });
   }
   // ...proceed
 });
@@ -160,4 +161,4 @@ For larger apps, use a validation library like `express-validator` or `zod` (cov
   Repeat the key (`?tags=a&tags=b`) or use bracket notation (`?tags[]=a&tags[]=b`), both parsed into `req.query.tags` as an array by the default `qs` parser.
 
 - **Difference between route params and query params (again, important)?**
-  Route params identify *which* resource (`/users/:id`); query params filter/modify *how* you want that resource or collection returned (`?sort=asc`).
+  Route params identify _which_ resource (`/users/:id`); query params filter/modify _how_ you want that resource or collection returned (`?sort=asc`).

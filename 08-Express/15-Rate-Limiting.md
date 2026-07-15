@@ -20,17 +20,17 @@ npm install express-rate-limit
 ### Basic Global Rate Limiter
 
 ```js
-const express = require('express');
-const rateLimit = require('express-rate-limit');
+const express = require("express");
+const rateLimit = require("express-rate-limit");
 
 const app = express();
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100,                  // limit each IP to 100 requests per windowMs
-  standardHeaders: true,     // return rate limit info in RateLimit-* headers
-  legacyHeaders: false,      // disable the deprecated X-RateLimit-* headers
-  message: { error: 'Too many requests, please try again later.' },
+  max: 100, // limit each IP to 100 requests per windowMs
+  standardHeaders: true, // return rate limit info in RateLimit-* headers
+  legacyHeaders: false, // disable the deprecated X-RateLimit-* headers
+  message: { error: "Too many requests, please try again later." },
 });
 
 app.use(limiter); // applies to all routes
@@ -45,14 +45,14 @@ Different endpoints often need different limits — e.g., login should be much s
 ```js
 const loginLimiter = rateLimit({
   windowMs: 10 * 60 * 1000, // 10 minutes
-  max: 5,                    // only 5 login attempts per 10 minutes
-  message: { error: 'Too many login attempts, try again later.' },
+  max: 5, // only 5 login attempts per 10 minutes
+  message: { error: "Too many login attempts, try again later." },
   skipSuccessfulRequests: true, // don't count successful logins against the limit
 });
 
-app.post('/api/login', loginLimiter, loginController);
+app.post("/api/login", loginLimiter, loginController);
 
-app.use('/api', apiLimiter); // more general limiter for the rest of the API
+app.use("/api", apiLimiter); // more general limiter for the rest of the API
 ```
 
 ## Response When Limit Is Exceeded
@@ -105,8 +105,8 @@ npm install rate-limit-redis ioredis
 ```
 
 ```js
-const RedisStore = require('rate-limit-redis');
-const Redis = require('ioredis');
+const RedisStore = require("rate-limit-redis");
+const Redis = require("ioredis");
 const redisClient = new Redis(process.env.REDIS_URL);
 
 const limiter = rateLimit({
@@ -131,9 +131,9 @@ const writeLimiter = rateLimit({ windowMs: 60 * 1000, max: 20 });
 
 app.use(generalLimiter); // baseline for everything
 
-app.use('/api/auth', authLimiter); // stricter for auth endpoints
+app.use("/api/auth", authLimiter); // stricter for auth endpoints
 
-app.post('/api/posts', writeLimiter, createPostController); // stricter for writes
+app.post("/api/posts", writeLimiter, createPostController); // stricter for writes
 ```
 
 ## Slowing Down Instead of Blocking: `express-slow-down`
@@ -145,11 +145,11 @@ npm install express-slow-down
 ```
 
 ```js
-const slowDown = require('express-slow-down');
+const slowDown = require("express-slow-down");
 
 const speedLimiter = slowDown({
   windowMs: 15 * 60 * 1000,
-  delayAfter: 50,      // allow 50 requests per window at full speed
+  delayAfter: 50, // allow 50 requests per window at full speed
   delayMs: (hits) => hits * 100, // each request after that adds 100ms delay
 });
 
@@ -161,10 +161,10 @@ app.use(speedLimiter);
 If deployed behind a reverse proxy/load balancer, set:
 
 ```js
-app.set('trust proxy', 1); // or true, depending on setup
+app.set("trust proxy", 1); // or true, depending on setup
 ```
 
-Without this, `req.ip` may resolve to the proxy's IP for every request, effectively rate-limiting *all* users together as one client.
+Without this, `req.ip` may resolve to the proxy's IP for every request, effectively rate-limiting _all_ users together as one client.
 
 ## Common Interview-Style Questions
 

@@ -15,18 +15,18 @@ Express is a minimal, unopinionated, fast web framework for Node.js. It sits on 
 Raw Node.js:
 
 ```js
-const http = require('http');
+const http = require("http");
 
 const server = http.createServer((req, res) => {
-  if (req.url === '/' && req.method === 'GET') {
-    res.writeHead(200, { 'Content-Type': 'text/plain' });
-    res.end('Home Page');
-  } else if (req.url === '/about' && req.method === 'GET') {
-    res.writeHead(200, { 'Content-Type': 'text/plain' });
-    res.end('About Page');
+  if (req.url === "/" && req.method === "GET") {
+    res.writeHead(200, { "Content-Type": "text/plain" });
+    res.end("Home Page");
+  } else if (req.url === "/about" && req.method === "GET") {
+    res.writeHead(200, { "Content-Type": "text/plain" });
+    res.end("About Page");
   } else {
     res.writeHead(404);
-    res.end('Not Found');
+    res.end("Not Found");
   }
 });
 
@@ -49,12 +49,12 @@ This creates `package.json` and installs Express into `node_modules`.
 
 ```js
 // app.js
-const express = require('express');
+const express = require("express");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.get('/', (req, res) => {
-  res.send('Hello, Express!');
+app.get("/", (req, res) => {
+  res.send("Hello, Express!");
 });
 
 app.listen(PORT, () => {
@@ -70,14 +70,14 @@ node app.js
 
 ### Breaking it down
 
-| Piece | Meaning |
-|---|---|
-| `express()` | Factory function that creates an Express application instance |
-| `app.get(path, handler)` | Registers a route handler for GET requests to `path` |
-| `req` | Represents the incoming HTTP request |
-| `res` | Represents the outgoing HTTP response |
-| `res.send()` | Sends a response body (string, object, buffer, etc.) |
-| `app.listen(port, cb)` | Starts the HTTP server and binds it to a port |
+| Piece                    | Meaning                                                       |
+| ------------------------ | ------------------------------------------------------------- |
+| `express()`              | Factory function that creates an Express application instance |
+| `app.get(path, handler)` | Registers a route handler for GET requests to `path`          |
+| `req`                    | Represents the incoming HTTP request                          |
+| `res`                    | Represents the outgoing HTTP response                         |
+| `res.send()`             | Sends a response body (string, object, buffer, etc.)          |
+| `app.listen(port, cb)`   | Starts the HTTP server and binds it to a port                 |
 
 ## The Express Application Object (`app`)
 
@@ -92,22 +92,22 @@ node app.js
 ## Application Settings
 
 ```js
-app.set('view engine', 'ejs');       // template engine
-app.set('views', './views');         // views directory
-app.set('trust proxy', true);        // trust X-Forwarded-* headers (behind Nginx/Heroku)
-app.get('trust proxy');              // read a setting
-app.disable('x-powered-by');         // remove the "X-Powered-By: Express" header (security)
+app.set("view engine", "ejs"); // template engine
+app.set("views", "./views"); // views directory
+app.set("trust proxy", true); // trust X-Forwarded-* headers (behind Nginx/Heroku)
+app.get("trust proxy"); // read a setting
+app.disable("x-powered-by"); // remove the "X-Powered-By: Express" header (security)
 ```
 
 ## Environment-based Configuration
 
 ```js
-const env = app.get('env'); // reads process.env.NODE_ENV, defaults to 'development'
+const env = app.get("env"); // reads process.env.NODE_ENV, defaults to 'development'
 
-if (env === 'production') {
+if (env === "production") {
   app.use(compression());
 } else {
-  app.use(morgan('dev'));
+  app.use(morgan("dev"));
 }
 ```
 
@@ -167,13 +167,13 @@ my-app/
 `src/app.js`:
 
 ```js
-const express = require('express');
+const express = require("express");
 const app = express();
 
 app.use(express.json());
 
-app.get('/health', (req, res) => {
-  res.json({ status: 'ok' });
+app.get("/health", (req, res) => {
+  res.json({ status: "ok" });
 });
 
 module.exports = app;
@@ -182,7 +182,7 @@ module.exports = app;
 `src/server.js`:
 
 ```js
-const app = require('./app');
+const app = require("./app");
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => console.log(`Listening on ${PORT}`));

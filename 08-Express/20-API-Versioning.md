@@ -9,8 +9,8 @@ As an API evolves, breaking changes (renamed fields, changed response shapes, re
 ### 1. URI Path Versioning (Most Common)
 
 ```js
-app.use('/api/v1/users', usersV1Router);
-app.use('/api/v2/users', usersV2Router);
+app.use("/api/v1/users", usersV1Router);
+app.use("/api/v2/users", usersV2Router);
 ```
 
 Example URLs:
@@ -28,17 +28,17 @@ GET /api/v2/users/42
 Client specifies the version via a custom header.
 
 ```js
-app.use('/api/users', (req, res, next) => {
-  const version = req.headers['x-api-version'] || 'v1';
+app.use("/api/users", (req, res, next) => {
+  const version = req.headers["x-api-version"] || "v1";
   req.apiVersion = version;
   next();
 });
 
-app.get('/api/users/:id', (req, res) => {
-  if (req.apiVersion === 'v2') {
-    return res.json({ id: req.params.id, fullName: 'Alice Doe' }); // v2 shape
+app.get("/api/users/:id", (req, res) => {
+  if (req.apiVersion === "v2") {
+    return res.json({ id: req.params.id, fullName: "Alice Doe" }); // v2 shape
   }
-  res.json({ id: req.params.id, name: 'Alice Doe' }); // v1 shape
+  res.json({ id: req.params.id, name: "Alice Doe" }); // v1 shape
 });
 ```
 
@@ -60,12 +60,12 @@ Accept: application/vnd.myapp.v2+json
 ```
 
 ```js
-app.get('/api/users/:id', (req, res) => {
-  const accept = req.headers.accept || '';
-  if (accept.includes('vnd.myapp.v2')) {
-    return res.json({ id: req.params.id, fullName: 'Alice Doe' });
+app.get("/api/users/:id", (req, res) => {
+  const accept = req.headers.accept || "";
+  if (accept.includes("vnd.myapp.v2")) {
+    return res.json({ id: req.params.id, fullName: "Alice Doe" });
   }
-  res.json({ id: req.params.id, name: 'Alice Doe' });
+  res.json({ id: req.params.id, name: "Alice Doe" });
 });
 ```
 
@@ -79,8 +79,8 @@ GET /api/users/42?version=2
 ```
 
 ```js
-app.get('/api/users/:id', (req, res) => {
-  const version = req.query.version || '1';
+app.get("/api/users/:id", (req, res) => {
+  const version = req.query.version || "1";
   // ...branch on version
 });
 ```
@@ -107,11 +107,11 @@ src/
 `routes/v1/index.js`:
 
 ```js
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const userRoutes = require('./userRoutes');
+const userRoutes = require("./userRoutes");
 
-router.use('/users', userRoutes);
+router.use("/users", userRoutes);
 
 module.exports = router;
 ```
@@ -119,11 +119,11 @@ module.exports = router;
 `routes/v2/index.js`:
 
 ```js
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const userRoutes = require('./userRoutes');
+const userRoutes = require("./userRoutes");
 
-router.use('/users', userRoutes);
+router.use("/users", userRoutes);
 
 module.exports = router;
 ```
@@ -131,15 +131,15 @@ module.exports = router;
 `app.js`:
 
 ```js
-const express = require('express');
-const v1Routes = require('./routes/v1');
-const v2Routes = require('./routes/v2');
+const express = require("express");
+const v1Routes = require("./routes/v1");
+const v2Routes = require("./routes/v2");
 
 const app = express();
 app.use(express.json());
 
-app.use('/api/v1', v1Routes);
-app.use('/api/v2', v2Routes);
+app.use("/api/v1", v1Routes);
+app.use("/api/v2", v2Routes);
 
 app.listen(3000);
 ```
@@ -150,13 +150,13 @@ Avoid duplicating business logic across versions — keep controllers/services s
 
 ```js
 // controllers/userController.js (shared across versions)
-const UserModel = require('../models/userModel');
+const UserModel = require("../models/userModel");
 
 exports.getUser = async (req, res) => {
   const user = await UserModel.findById(req.params.id);
-  if (!user) return res.status(404).json({ error: 'Not found' });
+  if (!user) return res.status(404).json({ error: "Not found" });
 
-  if (req.apiVersion === 'v2') {
+  if (req.apiVersion === "v2") {
     return res.json({ id: user.id, fullName: user.name }); // v2 response shape
   }
   res.json({ id: user.id, name: user.name }); // v1 response shape
@@ -168,12 +168,16 @@ exports.getUser = async (req, res) => {
 When retiring an old version, communicate clearly and give clients time to migrate:
 
 ```js
-app.use('/api/v1', (req, res, next) => {
-  res.set('Deprecation', 'true');
-  res.set('Sunset', 'Wed, 31 Dec 2026 23:59:59 GMT'); // RFC 8594 header
-  res.set('Link', '</api/v2>; rel="successor-version"');
-  next();
-}, v1Routes);
+app.use(
+  "/api/v1",
+  (req, res, next) => {
+    res.set("Deprecation", "true");
+    res.set("Sunset", "Wed, 31 Dec 2026 23:59:59 GMT"); // RFC 8594 header
+    res.set("Link", '</api/v2>; rel="successor-version"');
+    next();
+  },
+  v1Routes,
+);
 ```
 
 ## Semantic Versioning Reference (for context, not URL versioning itself)

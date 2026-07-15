@@ -17,8 +17,8 @@ npm install cors
 ### Allow All Origins (Development Only)
 
 ```js
-const express = require('express');
-const cors = require('cors');
+const express = require("express");
+const cors = require("cors");
 const app = express();
 
 app.use(cors()); // Access-Control-Allow-Origin: *
@@ -31,25 +31,32 @@ app.listen(3000);
 ### Allow a Specific Origin
 
 ```js
-app.use(cors({
-  origin: 'https://myfrontend.com',
-}));
+app.use(
+  cors({
+    origin: "https://myfrontend.com",
+  }),
+);
 ```
 
 ### Allow Multiple Origins
 
 ```js
-const allowedOrigins = ['https://myfrontend.com', 'https://admin.myfrontend.com'];
+const allowedOrigins = [
+  "https://myfrontend.com",
+  "https://admin.myfrontend.com",
+];
 
-app.use(cors({
-  origin: (origin, callback) => {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-}));
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+  }),
+);
 ```
 
 > `!origin` handles non-browser requests (like curl/Postman/server-to-server) where the `Origin` header isn't set.
@@ -57,17 +64,19 @@ app.use(cors({
 ### Allow Credentials (Cookies, Authorization Headers)
 
 ```js
-app.use(cors({
-  origin: 'https://myfrontend.com',
-  credentials: true, // allows cookies to be sent cross-origin
-}));
+app.use(
+  cors({
+    origin: "https://myfrontend.com",
+    credentials: true, // allows cookies to be sent cross-origin
+  }),
+);
 ```
 
 On the frontend, the request must also opt in:
 
 ```js
-fetch('https://api.example.com/data', {
-  credentials: 'include',
+fetch("https://api.example.com/data", {
+  credentials: "include",
 });
 ```
 
@@ -76,22 +85,24 @@ fetch('https://api.example.com/data', {
 ### Restricting Methods and Headers
 
 ```js
-app.use(cors({
-  origin: 'https://myfrontend.com',
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  exposedHeaders: ['X-Total-Count'], // headers the browser JS is allowed to read
-  maxAge: 86400, // cache preflight response for 1 day (seconds)
-}));
+app.use(
+  cors({
+    origin: "https://myfrontend.com",
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    exposedHeaders: ["X-Total-Count"], // headers the browser JS is allowed to read
+    maxAge: 86400, // cache preflight response for 1 day (seconds)
+  }),
+);
 ```
 
 ## Route-Specific CORS
 
 ```js
-const corsOptions = { origin: 'https://myfrontend.com' };
+const corsOptions = { origin: "https://myfrontend.com" };
 
-app.get('/public-data', cors(), publicController);            // open to all
-app.get('/private-data', cors(corsOptions), privateController); // restricted
+app.get("/public-data", cors(), publicController); // open to all
+app.get("/private-data", cors(corsOptions), privateController); // restricted
 ```
 
 ## Preflight Requests (`OPTIONS`)
@@ -99,7 +110,7 @@ app.get('/private-data', cors(corsOptions), privateController); // restricted
 For "non-simple" requests (e.g., `Content-Type: application/json`, custom headers, methods like PUT/DELETE), browsers first send an `OPTIONS` preflight request to check permissions before the actual request.
 
 ```js
-app.options('*', cors()); // handle preflight for all routes (Express 4)
+app.options("*", cors()); // handle preflight for all routes (Express 4)
 // Express 5: app.options('/{*splat}', cors());
 ```
 
@@ -111,12 +122,12 @@ Understanding what the middleware does under the hood:
 
 ```js
 app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', 'https://myfrontend.com');
-  res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE');
-  res.header('Access-Control-Allow-Headers', 'Content-Type,Authorization');
-  res.header('Access-Control-Allow-Credentials', 'true');
+  res.header("Access-Control-Allow-Origin", "https://myfrontend.com");
+  res.header("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE");
+  res.header("Access-Control-Allow-Headers", "Content-Type,Authorization");
+  res.header("Access-Control-Allow-Credentials", "true");
 
-  if (req.method === 'OPTIONS') {
+  if (req.method === "OPTIONS") {
     return res.sendStatus(204); // respond to preflight immediately
   }
   next();
@@ -125,38 +136,40 @@ app.use((req, res, next) => {
 
 ## Common CORS Errors and Fixes
 
-| Error (in browser console) | Cause | Fix |
-|---|---|---|
-| `No 'Access-Control-Allow-Origin' header is present` | Server didn't send CORS headers | Add `cors()` middleware |
-| `The value of the 'Access-Control-Allow-Origin' header ... must not be the wildcard '*' when credentials mode is 'include'` | Using `origin: '*'` with credentials | Set an explicit origin string |
-| `Method PUT is not allowed by Access-Control-Allow-Methods` | Method not whitelisted | Add method to `methods` option |
-| Preflight `OPTIONS` returns 404/500 | No handler for `OPTIONS` | Ensure `cors()` middleware is applied before routes, or add explicit `app.options()` handler |
+| Error (in browser console)                                                                                                  | Cause                                | Fix                                                                                          |
+| --------------------------------------------------------------------------------------------------------------------------- | ------------------------------------ | -------------------------------------------------------------------------------------------- |
+| `No 'Access-Control-Allow-Origin' header is present`                                                                        | Server didn't send CORS headers      | Add `cors()` middleware                                                                      |
+| `The value of the 'Access-Control-Allow-Origin' header ... must not be the wildcard '*' when credentials mode is 'include'` | Using `origin: '*'` with credentials | Set an explicit origin string                                                                |
+| `Method PUT is not allowed by Access-Control-Allow-Methods`                                                                 | Method not whitelisted               | Add method to `methods` option                                                               |
+| Preflight `OPTIONS` returns 404/500                                                                                         | No handler for `OPTIONS`             | Ensure `cors()` middleware is applied before routes, or add explicit `app.options()` handler |
 
 ## Full Production-Style Example
 
 ```js
-const express = require('express');
-const cors = require('cors');
+const express = require("express");
+const cors = require("cors");
 
 const app = express();
 
-const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',') || [];
+const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(",") || [];
 
-app.use(cors({
-  origin: (origin, callback) => {
-    if (!origin || allowedOrigins.includes(origin)) {
-      return callback(null, true);
-    }
-    callback(new Error('CORS not allowed for this origin'));
-  },
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-}));
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+      callback(new Error("CORS not allowed for this origin"));
+    },
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  }),
+);
 
 app.use(express.json());
 
-app.get('/api/health', (req, res) => res.json({ status: 'ok' }));
+app.get("/api/health", (req, res) => res.json({ status: "ok" }));
 
 app.listen(3000);
 ```

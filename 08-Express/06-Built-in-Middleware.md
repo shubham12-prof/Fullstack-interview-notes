@@ -7,12 +7,12 @@ Express ships with a small set of built-in middleware functions, available direc
 Parses incoming requests with a `Content-Type: application/json` header and populates `req.body` with the parsed object.
 
 ```js
-const express = require('express');
+const express = require("express");
 const app = express();
 
 app.use(express.json());
 
-app.post('/data', (req, res) => {
+app.post("/data", (req, res) => {
   console.log(req.body); // parsed JSON object
   res.json({ received: req.body });
 });
@@ -21,11 +21,13 @@ app.post('/data', (req, res) => {
 ### Options
 
 ```js
-app.use(express.json({
-  limit: '1mb',        // max body size (default '100kb')
-  strict: true,         // only accepts arrays/objects (default true)
-  type: 'application/json', // which Content-Type to parse
-}));
+app.use(
+  express.json({
+    limit: "1mb", // max body size (default '100kb')
+    strict: true, // only accepts arrays/objects (default true)
+    type: "application/json", // which Content-Type to parse
+  }),
+);
 ```
 
 ## 2. `express.urlencoded()`
@@ -35,9 +37,9 @@ Parses incoming requests with `Content-Type: application/x-www-form-urlencoded` 
 ```js
 app.use(express.urlencoded({ extended: true }));
 
-app.post('/submit-form', (req, res) => {
+app.post("/submit-form", (req, res) => {
   console.log(req.body); // { name: 'Alice', age: '30' }
-  res.send('Form received');
+  res.send("Form received");
 });
 ```
 
@@ -49,7 +51,7 @@ app.post('/submit-form', (req, res) => {
 Serves static files (HTML, CSS, JS, images) directly from a folder.
 
 ```js
-app.use(express.static('public'));
+app.use(express.static("public"));
 ```
 
 If `public/style.css` exists, it's now accessible at `http://localhost:3000/style.css` — no route needed.
@@ -57,19 +59,21 @@ If `public/style.css` exists, it's now accessible at `http://localhost:3000/styl
 ### Mounting under a virtual path prefix
 
 ```js
-app.use('/static', express.static('public'));
+app.use("/static", express.static("public"));
 // public/style.css -> http://localhost:3000/static/style.css
 ```
 
 ### Options
 
 ```js
-app.use(express.static('public', {
-  maxAge: '1d',        // cache-control max-age
-  index: 'index.html',  // default file served for directory requests
-  dotfiles: 'ignore',   // how to treat dotfiles (ignore/allow/deny)
-  etag: true,
-}));
+app.use(
+  express.static("public", {
+    maxAge: "1d", // cache-control max-age
+    index: "index.html", // default file served for directory requests
+    dotfiles: "ignore", // how to treat dotfiles (ignore/allow/deny)
+    etag: true,
+  }),
+);
 ```
 
 (Full details in **11-Static-Files.md**.)
@@ -79,9 +83,9 @@ app.use(express.static('public', {
 Parses the request body into a `Buffer` when `Content-Type` matches. Useful for binary payloads or webhook signature verification (e.g., Stripe webhooks require the raw body).
 
 ```js
-app.post('/webhook', express.raw({ type: 'application/json' }), (req, res) => {
+app.post("/webhook", express.raw({ type: "application/json" }), (req, res) => {
   console.log(req.body); // Buffer, not parsed JSON
-  const signature = req.headers['stripe-signature'];
+  const signature = req.headers["stripe-signature"];
   // verify signature using raw buffer...
   res.sendStatus(200);
 });
@@ -92,26 +96,26 @@ app.post('/webhook', express.raw({ type: 'application/json' }), (req, res) => {
 Parses the request body as plain text into a string.
 
 ```js
-app.use(express.text({ type: 'text/plain' }));
+app.use(express.text({ type: "text/plain" }));
 
-app.post('/note', (req, res) => {
+app.post("/note", (req, res) => {
   console.log(typeof req.body); // 'string'
-  res.send('Received note');
+  res.send("Received note");
 });
 ```
 
 ## Putting It All Together
 
 ```js
-const express = require('express');
+const express = require("express");
 const app = express();
 
-app.use(express.json());                      // JSON APIs
+app.use(express.json()); // JSON APIs
 app.use(express.urlencoded({ extended: true })); // HTML forms
-app.use(express.static('public'));             // static assets
-app.use('/webhook', express.raw({ type: '*/*' })); // raw body for a specific route
+app.use(express.static("public")); // static assets
+app.use("/webhook", express.raw({ type: "*/*" })); // raw body for a specific route
 
-app.post('/api/users', (req, res) => {
+app.post("/api/users", (req, res) => {
   res.status(201).json({ created: req.body });
 });
 
@@ -122,7 +126,7 @@ app.listen(3000);
 
 - **Forgetting `express.json()`** → `req.body` will be `undefined` for JSON POST/PUT/PATCH requests.
 - **Wrong `Content-Type` header from the client** → the matching parser middleware won't run, so `req.body` stays empty. Always check the client is sending `Content-Type: application/json`.
-- **Order matters** — parsing middleware must be registered *before* the routes that rely on `req.body`.
+- **Order matters** — parsing middleware must be registered _before_ the routes that rely on `req.body`.
 - **`express.static` doesn't require auth** by default — anything inside the folder is publicly accessible; never point it at a directory with sensitive files.
 
 ## Common Interview-Style Questions

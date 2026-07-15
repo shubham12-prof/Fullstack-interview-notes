@@ -4,27 +4,27 @@ The `req` object represents the HTTP request. Express extends Node's native `htt
 
 ## Key Properties
 
-| Property | Description | Example |
-|---|---|---|
-| `req.params` | Route parameters | `{ id: '5' }` |
-| `req.query` | Query string parameters | `{ page: '2' }` |
-| `req.body` | Parsed request body (needs body-parsing middleware) | `{ name: 'Alice' }` |
-| `req.headers` | All request headers (lowercase keys) | `{ 'content-type': 'application/json' }` |
-| `req.method` | HTTP method | `'GET'` |
-| `req.url` | URL relative to the mount point | `/users?page=2` |
-| `req.originalUrl` | Full original URL (useful with sub-routers) | `/api/users?page=2` |
-| `req.path` | Just the path, no query string | `/users` |
-| `req.hostname` | Host name from `Host` header | `example.com` |
-| `req.ip` | Remote IP address of the request | `127.0.0.1` |
-| `req.protocol` | `http` or `https` | `https` |
-| `req.secure` | `true` if HTTPS | `true` |
-| `req.cookies` | Parsed cookies (needs `cookie-parser`) | `{ token: 'abc' }` |
-| `req.xhr` | `true` if request came via `XMLHttpRequest` | `true`/`false` |
+| Property          | Description                                         | Example                                  |
+| ----------------- | --------------------------------------------------- | ---------------------------------------- |
+| `req.params`      | Route parameters                                    | `{ id: '5' }`                            |
+| `req.query`       | Query string parameters                             | `{ page: '2' }`                          |
+| `req.body`        | Parsed request body (needs body-parsing middleware) | `{ name: 'Alice' }`                      |
+| `req.headers`     | All request headers (lowercase keys)                | `{ 'content-type': 'application/json' }` |
+| `req.method`      | HTTP method                                         | `'GET'`                                  |
+| `req.url`         | URL relative to the mount point                     | `/users?page=2`                          |
+| `req.originalUrl` | Full original URL (useful with sub-routers)         | `/api/users?page=2`                      |
+| `req.path`        | Just the path, no query string                      | `/users`                                 |
+| `req.hostname`    | Host name from `Host` header                        | `example.com`                            |
+| `req.ip`          | Remote IP address of the request                    | `127.0.0.1`                              |
+| `req.protocol`    | `http` or `https`                                   | `https`                                  |
+| `req.secure`      | `true` if HTTPS                                     | `true`                                   |
+| `req.cookies`     | Parsed cookies (needs `cookie-parser`)              | `{ token: 'abc' }`                       |
+| `req.xhr`         | `true` if request came via `XMLHttpRequest`         | `true`/`false`                           |
 
 ## Example: Inspecting a Request
 
 ```js
-app.get('/inspect', (req, res) => {
+app.get("/inspect", (req, res) => {
   res.json({
     method: req.method,
     url: req.url,
@@ -41,9 +41,9 @@ app.get('/inspect', (req, res) => {
 ## `req.get(headerName)` — Read a Specific Header
 
 ```js
-app.get('/', (req, res) => {
-  const contentType = req.get('Content-Type');
-  const userAgent = req.get('User-Agent');
+app.get("/", (req, res) => {
+  const contentType = req.get("Content-Type");
+  const userAgent = req.get("User-Agent");
   res.send(`Your browser is: ${userAgent}`);
 });
 ```
@@ -51,13 +51,13 @@ app.get('/', (req, res) => {
 ## `req.is(type)` — Check Content-Type
 
 ```js
-app.post('/upload', (req, res) => {
-  if (req.is('application/json')) {
-    res.send('Got JSON');
-  } else if (req.is('multipart/form-data')) {
-    res.send('Got form data with a file');
+app.post("/upload", (req, res) => {
+  if (req.is("application/json")) {
+    res.send("Got JSON");
+  } else if (req.is("multipart/form-data")) {
+    res.send("Got form data with a file");
   } else {
-    res.status(415).send('Unsupported content type');
+    res.status(415).send("Unsupported content type");
   }
 });
 ```
@@ -67,11 +67,11 @@ app.post('/upload', (req, res) => {
 Checks what response types the client will accept (from the `Accept` header).
 
 ```js
-app.get('/data', (req, res) => {
+app.get("/data", (req, res) => {
   res.format({
-    'application/json': () => res.json({ message: 'Hello JSON' }),
-    'text/html': () => res.send('<h1>Hello HTML</h1>'),
-    default: () => res.status(406).send('Not Acceptable'),
+    "application/json": () => res.json({ message: "Hello JSON" }),
+    "text/html": () => res.send("<h1>Hello HTML</h1>"),
+    default: () => res.status(406).send("Not Acceptable"),
   });
 });
 ```
@@ -82,10 +82,10 @@ app.get('/data', (req, res) => {
 // PUT /users/42?notify=true
 // Body: { "name": "Alice" }
 
-app.put('/users/:id', (req, res) => {
+app.put("/users/:id", (req, res) => {
   console.log(req.params); // { id: '42' }
-  console.log(req.query);  // { notify: 'true' }
-  console.log(req.body);   // { name: 'Alice' }
+  console.log(req.query); // { notify: 'true' }
+  console.log(req.body); // { name: 'Alice' }
   res.sendStatus(200);
 });
 ```
@@ -95,8 +95,8 @@ app.put('/users/:id', (req, res) => {
 By default, `req.ip` may show the proxy's IP instead of the real client IP when behind a load balancer/reverse proxy (Nginx, Heroku, etc.). Enable `trust proxy`:
 
 ```js
-app.set('trust proxy', true); // trust X-Forwarded-For header
-app.get('/', (req, res) => {
+app.set("trust proxy", true); // trust X-Forwarded-For header
+app.get("/", (req, res) => {
   res.send(`Your IP: ${req.ip}`);
 });
 ```
@@ -104,12 +104,12 @@ app.get('/', (req, res) => {
 ## `req.cookies` (requires `cookie-parser`)
 
 ```js
-const cookieParser = require('cookie-parser');
+const cookieParser = require("cookie-parser");
 app.use(cookieParser());
 
-app.get('/', (req, res) => {
+app.get("/", (req, res) => {
   console.log(req.cookies); // { sessionId: 'abc123' }
-  res.send('Cookies logged');
+  res.send("Cookies logged");
 });
 ```
 
@@ -123,7 +123,7 @@ app.use((req, res, next) => {
   next();
 });
 
-app.get('/', (req, res) => {
+app.get("/", (req, res) => {
   res.send(`Request received at ${req.requestTime}`);
 });
 ```
@@ -133,7 +133,7 @@ This is exactly how authentication middleware attaches `req.user`, or how a requ
 ## `req.range()` — Handling Range Requests (e.g. video streaming)
 
 ```js
-app.get('/video', (req, res) => {
+app.get("/video", (req, res) => {
   const range = req.range(fileSize); // parses "Range" header
   // use range.start / range.end to stream partial content
 });

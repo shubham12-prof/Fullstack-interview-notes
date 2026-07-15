@@ -19,9 +19,11 @@ app.use(myMiddleware);
 ```js
 function requestLogger(req, res, next) {
   const start = Date.now();
-  res.on('finish', () => {
+  res.on("finish", () => {
     const duration = Date.now() - start;
-    console.log(`${req.method} ${req.originalUrl} ${res.statusCode} - ${duration}ms`);
+    console.log(
+      `${req.method} ${req.originalUrl} ${res.statusCode} - ${duration}ms`,
+    );
   });
   next();
 }
@@ -33,10 +35,10 @@ app.use(requestLogger);
 
 ```js
 function authenticate(req, res, next) {
-  const token = req.headers.authorization?.split(' ')[1]; // "Bearer <token>"
+  const token = req.headers.authorization?.split(" ")[1]; // "Bearer <token>"
 
   if (!token) {
-    return res.status(401).json({ error: 'No token provided' });
+    return res.status(401).json({ error: "No token provided" });
   }
 
   try {
@@ -44,11 +46,11 @@ function authenticate(req, res, next) {
     req.user = decoded; // attach user info for downstream handlers
     next();
   } catch (err) {
-    return res.status(401).json({ error: 'Invalid token' });
+    return res.status(401).json({ error: "Invalid token" });
   }
 }
 
-app.get('/profile', authenticate, (req, res) => {
+app.get("/profile", authenticate, (req, res) => {
   res.json({ user: req.user });
 });
 ```
@@ -61,25 +63,30 @@ A **middleware factory** is a function that returns a middleware function, letti
 function requireRole(role) {
   return (req, res, next) => {
     if (!req.user || req.user.role !== role) {
-      return res.status(403).json({ error: 'Forbidden' });
+      return res.status(403).json({ error: "Forbidden" });
     }
     next();
   };
 }
 
-app.delete('/admin/users/:id', authenticate, requireRole('admin'), (req, res) => {
-  res.send(`User ${req.params.id} deleted`);
-});
+app.delete(
+  "/admin/users/:id",
+  authenticate,
+  requireRole("admin"),
+  (req, res) => {
+    res.send(`User ${req.params.id} deleted`);
+  },
+);
 ```
 
 ## Example 4: Request ID Middleware (tracing)
 
 ```js
-const { randomUUID } = require('crypto');
+const { randomUUID } = require("crypto");
 
 function requestId(req, res, next) {
   req.id = randomUUID();
-  res.setHeader('X-Request-Id', req.id);
+  res.setHeader("X-Request-Id", req.id);
   next();
 }
 
@@ -98,8 +105,8 @@ function attachDb(db) {
 
 app.use(attachDb(myDatabaseConnection));
 
-app.get('/users', (req, res) => {
-  req.db.query('SELECT * FROM users', (err, rows) => {
+app.get("/users", (req, res) => {
+  req.db.query("SELECT * FROM users", (err, rows) => {
     res.json(rows);
   });
 });
@@ -114,15 +121,18 @@ const asyncHandler = (fn) => (req, res, next) => {
   Promise.resolve(fn(req, res, next)).catch(next);
 };
 
-app.get('/users/:id', asyncHandler(async (req, res) => {
-  const user = await db.findUser(req.params.id);
-  if (!user) {
-    const err = new Error('User not found');
-    err.status = 404;
-    throw err; // caught by asyncHandler, forwarded to next(err)
-  }
-  res.json(user);
-}));
+app.get(
+  "/users/:id",
+  asyncHandler(async (req, res) => {
+    const user = await db.findUser(req.params.id);
+    if (!user) {
+      const err = new Error("User not found");
+      err.status = 404;
+      throw err; // caught by asyncHandler, forwarded to next(err)
+    }
+    res.json(user);
+  }),
+);
 ```
 
 ## Example 7: Conditional Middleware
@@ -130,7 +140,7 @@ app.get('/users/:id', asyncHandler(async (req, res) => {
 ```js
 function skipForHealthCheck(middleware) {
   return (req, res, next) => {
-    if (req.path === '/health') return next();
+    if (req.path === "/health") return next();
     return middleware(req, res, next);
   };
 }
@@ -160,7 +170,7 @@ module.exports = function authenticate(req, res, next) {
 `app.js`:
 
 ```js
-const authenticate = require('./middleware/auth');
+const authenticate = require("./middleware/auth");
 app.use(authenticate);
 ```
 

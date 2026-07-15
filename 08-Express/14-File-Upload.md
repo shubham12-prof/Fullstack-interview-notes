@@ -11,15 +11,15 @@ npm install multer
 ## Basic Setup: Disk Storage
 
 ```js
-const express = require('express');
-const multer = require('multer');
-const path = require('path');
+const express = require("express");
+const multer = require("multer");
+const path = require("path");
 
 const app = express();
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, 'uploads/'); // folder must already exist
+    cb(null, "uploads/"); // folder must already exist
   },
   filename: (req, file, cb) => {
     const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
@@ -29,7 +29,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-app.post('/upload', upload.single('avatar'), (req, res) => {
+app.post("/upload", upload.single("avatar"), (req, res) => {
   console.log(req.file); // metadata about the uploaded file
   res.json({ file: req.file });
 });
@@ -54,26 +54,26 @@ app.listen(3000);
 
 ```js
 // Single file, field name "avatar"
-app.post('/upload-single', upload.single('avatar'), handler);
+app.post("/upload-single", upload.single("avatar"), handler);
 
 // Multiple files, same field name "photos", max 5
-app.post('/upload-multiple', upload.array('photos', 5), (req, res) => {
+app.post("/upload-multiple", upload.array("photos", 5), (req, res) => {
   console.log(req.files); // array of file objects
   res.json({ files: req.files });
 });
 
 // Multiple fields with different names
 app.post(
-  '/upload-mixed',
+  "/upload-mixed",
   upload.fields([
-    { name: 'avatar', maxCount: 1 },
-    { name: 'gallery', maxCount: 10 },
+    { name: "avatar", maxCount: 1 },
+    { name: "gallery", maxCount: 10 },
   ]),
   (req, res) => {
-    console.log(req.files.avatar);  // array
+    console.log(req.files.avatar); // array
     console.log(req.files.gallery); // array
     res.json({ files: req.files });
-  }
+  },
 );
 ```
 
@@ -86,9 +86,9 @@ const upload = multer({
     fileSize: 5 * 1024 * 1024, // 5MB
   },
   fileFilter: (req, file, cb) => {
-    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+    const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
     if (!allowedTypes.includes(file.mimetype)) {
-      return cb(new Error('Only JPEG, PNG, and WEBP images are allowed'));
+      return cb(new Error("Only JPEG, PNG, and WEBP images are allowed"));
     }
     cb(null, true);
   },
@@ -98,8 +98,8 @@ const upload = multer({
 ### Handling Multer Errors
 
 ```js
-app.post('/upload', (req, res, next) => {
-  upload.single('avatar')(req, res, (err) => {
+app.post("/upload", (req, res, next) => {
+  upload.single("avatar")(req, res, (err) => {
     if (err instanceof multer.MulterError) {
       // e.g. LIMIT_FILE_SIZE
       return res.status(400).json({ error: err.message });
@@ -129,10 +129,10 @@ When you want to forward the file straight to cloud storage (S3, Cloudinary) ins
 ```js
 const upload = multer({ storage: multer.memoryStorage() });
 
-app.post('/upload-to-cloud', upload.single('avatar'), async (req, res) => {
+app.post("/upload-to-cloud", upload.single("avatar"), async (req, res) => {
   console.log(req.file.buffer); // raw file data in memory
   // await s3.upload({ Bucket: '...', Key: '...', Body: req.file.buffer }).promise();
-  res.json({ message: 'Uploaded to cloud' });
+  res.json({ message: "Uploaded to cloud" });
 });
 ```
 
@@ -143,22 +143,22 @@ npm install multer-s3 @aws-sdk/client-s3
 ```
 
 ```js
-const multerS3 = require('multer-s3');
-const { S3Client } = require('@aws-sdk/client-s3');
+const multerS3 = require("multer-s3");
+const { S3Client } = require("@aws-sdk/client-s3");
 
-const s3 = new S3Client({ region: 'us-east-1' });
+const s3 = new S3Client({ region: "us-east-1" });
 
 const upload = multer({
   storage: multerS3({
     s3,
-    bucket: 'my-app-uploads',
+    bucket: "my-app-uploads",
     key: (req, file, cb) => {
       cb(null, `avatars/${Date.now()}-${file.originalname}`);
     },
   }),
 });
 
-app.post('/upload', upload.single('avatar'), (req, res) => {
+app.post("/upload", upload.single("avatar"), (req, res) => {
   res.json({ url: req.file.location }); // public S3 URL
 });
 ```
@@ -166,7 +166,7 @@ app.post('/upload', upload.single('avatar'), (req, res) => {
 ## Serving Uploaded Files
 
 ```js
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 ```
 
 Now `uploads/1719999999.jpg` is served at `http://localhost:3000/uploads/1719999999.jpg`.
@@ -174,13 +174,13 @@ Now `uploads/1719999999.jpg` is served at `http://localhost:3000/uploads/1719999
 ## Complete Example: Avatar Upload Endpoint
 
 ```js
-const express = require('express');
-const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
+const express = require("express");
+const multer = require("multer");
+const path = require("path");
+const fs = require("fs");
 
 const app = express();
-const uploadDir = path.join(__dirname, 'uploads');
+const uploadDir = path.join(__dirname, "uploads");
 if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir);
 
 const storage = multer.diskStorage({
@@ -194,22 +194,22 @@ const upload = multer({
   storage,
   limits: { fileSize: 2 * 1024 * 1024 }, // 2MB
   fileFilter: (req, file, cb) => {
-    if (!file.mimetype.startsWith('image/')) {
-      return cb(new Error('Only image files are allowed'));
+    if (!file.mimetype.startsWith("image/")) {
+      return cb(new Error("Only image files are allowed"));
     }
     cb(null, true);
   },
 });
 
-app.post('/api/avatar', upload.single('avatar'), (req, res) => {
-  if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
+app.post("/api/avatar", upload.single("avatar"), (req, res) => {
+  if (!req.file) return res.status(400).json({ error: "No file uploaded" });
   res.status(201).json({
-    message: 'Upload successful',
+    message: "Upload successful",
     url: `/uploads/${req.file.filename}`,
   });
 });
 
-app.use('/uploads', express.static(uploadDir));
+app.use("/uploads", express.static(uploadDir));
 
 app.use((err, req, res, next) => {
   res.status(400).json({ error: err.message });

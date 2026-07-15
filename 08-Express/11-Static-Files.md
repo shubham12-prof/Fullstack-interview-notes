@@ -7,11 +7,11 @@ Static files are assets that don't change per-request: HTML, CSS, client-side JS
 ## Basic Usage
 
 ```js
-const express = require('express');
-const path = require('path');
+const express = require("express");
+const path = require("path");
 const app = express();
 
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, "public")));
 
 app.listen(3000);
 ```
@@ -40,7 +40,7 @@ These are now accessible directly:
 ## Serving Under a Virtual Path Prefix
 
 ```js
-app.use('/static', express.static(path.join(__dirname, 'public')));
+app.use("/static", express.static(path.join(__dirname, "public")));
 ```
 
 Now `public/style.css` is served at `http://localhost:3000/static/style.css`. The folder name (`public`) does **not** appear in the URL — only the mount path (`/static`) does.
@@ -50,8 +50,8 @@ Now `public/style.css` is served at `http://localhost:3000/static/style.css`. Th
 You can mount several static folders; Express checks them in the order they're registered.
 
 ```js
-app.use(express.static(path.join(__dirname, 'public')));
-app.use(express.static(path.join(__dirname, 'uploads')));
+app.use(express.static(path.join(__dirname, "public")));
+app.use(express.static(path.join(__dirname, "uploads")));
 ```
 
 ## Serving an `index.html` for the Root Path
@@ -59,31 +59,35 @@ app.use(express.static(path.join(__dirname, 'uploads')));
 If `public/index.html` exists, requesting `/` automatically serves it (default behavior — configurable via the `index` option).
 
 ```js
-app.use(express.static(path.join(__dirname, 'public'), {
-  index: 'home.html', // serve public/home.html for '/' instead of index.html
-}));
+app.use(
+  express.static(path.join(__dirname, "public"), {
+    index: "home.html", // serve public/home.html for '/' instead of index.html
+  }),
+);
 ```
 
 ## Useful `express.static()` Options
 
 ```js
-app.use(express.static('public', {
-  dotfiles: 'ignore',      // 'allow' | 'deny' | 'ignore' — how to treat files starting with "."
-  etag: true,               // enable/disable etag generation
-  extensions: ['html'],     // fallback extensions, e.g. /about -> /about.html
-  index: 'index.html',      // default file to serve for a directory
-  maxAge: '1d',              // Cache-Control max-age (e.g., '1d', 86400000 ms)
-  redirect: true,             // redirect to trailing "/" when a directory is requested
-  setHeaders: (res, filePath) => {
-    res.set('X-Custom-Header', 'value');
-  },
-}));
+app.use(
+  express.static("public", {
+    dotfiles: "ignore", // 'allow' | 'deny' | 'ignore' — how to treat files starting with "."
+    etag: true, // enable/disable etag generation
+    extensions: ["html"], // fallback extensions, e.g. /about -> /about.html
+    index: "index.html", // default file to serve for a directory
+    maxAge: "1d", // Cache-Control max-age (e.g., '1d', 86400000 ms)
+    redirect: true, // redirect to trailing "/" when a directory is requested
+    setHeaders: (res, filePath) => {
+      res.set("X-Custom-Header", "value");
+    },
+  }),
+);
 ```
 
 ### Extension Fallback Example
 
 ```js
-app.use(express.static('public', { extensions: ['html', 'htm'] }));
+app.use(express.static("public", { extensions: ["html", "htm"] }));
 ```
 
 A request to `/about` will now also match `public/about.html` if it exists.
@@ -91,10 +95,12 @@ A request to `/about` will now also match `public/about.html` if it exists.
 ## Caching Static Assets
 
 ```js
-app.use(express.static('public', {
-  maxAge: '30d', // browsers cache for 30 days
-  etag: true,
-}));
+app.use(
+  express.static("public", {
+    maxAge: "30d", // browsers cache for 30 days
+    etag: true,
+  }),
+);
 ```
 
 For production apps, it's common to serve static files through a CDN or reverse proxy (Nginx, CloudFront) rather than directly through Node — Express's static serving is fine for development and small-scale production.
@@ -104,18 +110,19 @@ For production apps, it's common to serve static files through a CDN or reverse 
 For SPAs (React, Vue, etc.), serve the built `dist`/`build` folder and fall back to `index.html` for any unmatched route (so client-side routing works):
 
 ```js
-app.use(express.static(path.join(__dirname, 'client/build')));
+app.use(express.static(path.join(__dirname, "client/build")));
 
 // Must come after API routes, and after express.static
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'client/build', 'index.html'));
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "client/build", "index.html"));
 });
 ```
 
 > In Express 5, wildcard route matching changed — prefer:
+>
 > ```js
-> app.get('/{*splat}', (req, res) => {
->   res.sendFile(path.join(__dirname, 'client/build', 'index.html'));
+> app.get("/{*splat}", (req, res) => {
+>   res.sendFile(path.join(__dirname, "client/build", "index.html"));
 > });
 > ```
 
@@ -124,8 +131,8 @@ app.get('*', (req, res) => {
 Instead of a whole folder, you can serve individual files by route:
 
 ```js
-app.get('/download-logo', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public/images/logo.png'));
+app.get("/download-logo", (req, res) => {
+  res.sendFile(path.join(__dirname, "public/images/logo.png"));
 });
 ```
 

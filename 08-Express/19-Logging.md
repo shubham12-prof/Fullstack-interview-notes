@@ -14,14 +14,14 @@ npm install morgan
 ### Basic Usage
 
 ```js
-const express = require('express');
-const morgan = require('morgan');
+const express = require("express");
+const morgan = require("morgan");
 
 const app = express();
 
-app.use(morgan('dev')); // colored, concise output — great for development
+app.use(morgan("dev")); // colored, concise output — great for development
 
-app.get('/', (req, res) => res.send('Hello'));
+app.get("/", (req, res) => res.send("Hello"));
 
 app.listen(3000);
 ```
@@ -34,16 +34,16 @@ GET / 200 3.212 ms - 5
 
 ### Built-in Formats
 
-| Format | Description |
-|---|---|
-| `'dev'` | Concise colored output, ideal for development |
+| Format       | Description                                               |
+| ------------ | --------------------------------------------------------- |
+| `'dev'`      | Concise colored output, ideal for development             |
 | `'combined'` | Standard Apache combined log format, ideal for production |
-| `'common'` | Standard Apache common log format |
-| `'short'` | Shorter than default, includes response time |
-| `'tiny'` | Minimal output |
+| `'common'`   | Standard Apache common log format                         |
+| `'short'`    | Shorter than default, includes response time              |
+| `'tiny'`     | Minimal output                                            |
 
 ```js
-app.use(morgan('combined'));
+app.use(morgan("combined"));
 ```
 
 Example `combined` output:
@@ -55,31 +55,33 @@ Example `combined` output:
 ### Custom Format
 
 ```js
-morgan.token('id', (req) => req.id); // custom token, e.g. request ID
+morgan.token("id", (req) => req.id); // custom token, e.g. request ID
 
-app.use(morgan(':id :method :url :status :response-time ms'));
+app.use(morgan(":id :method :url :status :response-time ms"));
 ```
 
 ### Logging to a File
 
 ```js
-const fs = require('fs');
-const path = require('path');
+const fs = require("fs");
+const path = require("path");
 
 const accessLogStream = fs.createWriteStream(
-  path.join(__dirname, 'access.log'),
-  { flags: 'a' } // append mode
+  path.join(__dirname, "access.log"),
+  { flags: "a" }, // append mode
 );
 
-app.use(morgan('combined', { stream: accessLogStream }));
+app.use(morgan("combined", { stream: accessLogStream }));
 ```
 
 ### Skipping Certain Logs
 
 ```js
-app.use(morgan('dev', {
-  skip: (req, res) => res.statusCode < 400, // only log errors
-}));
+app.use(
+  morgan("dev", {
+    skip: (req, res) => res.statusCode < 400, // only log errors
+  }),
+);
 ```
 
 ## Winston — Application-Level Logging
@@ -91,24 +93,24 @@ npm install winston
 ### Basic Setup
 
 ```js
-const winston = require('winston');
+const winston = require("winston");
 
 const logger = winston.createLogger({
-  level: 'info', // minimum level to log: error, warn, info, http, verbose, debug, silly
+  level: "info", // minimum level to log: error, warn, info, http, verbose, debug, silly
   format: winston.format.combine(
     winston.format.timestamp(),
-    winston.format.json()
+    winston.format.json(),
   ),
   transports: [
     new winston.transports.Console(),
-    new winston.transports.File({ filename: 'logs/error.log', level: 'error' }),
-    new winston.transports.File({ filename: 'logs/combined.log' }),
+    new winston.transports.File({ filename: "logs/error.log", level: "error" }),
+    new winston.transports.File({ filename: "logs/combined.log" }),
   ],
 });
 
-logger.info('Server started');
-logger.warn('Cache miss for key: user:42');
-logger.error('Database connection failed');
+logger.info("Server started");
+logger.warn("Cache miss for key: user:42");
+logger.error("Database connection failed");
 ```
 
 ### Log Levels (npm convention, highest to lowest priority)
@@ -122,13 +124,16 @@ Setting `level: 'info'` logs `error`, `warn`, and `info` — but not `debug`/`si
 ### Environment-Aware Configuration
 
 ```js
-const isProduction = process.env.NODE_ENV === 'production';
+const isProduction = process.env.NODE_ENV === "production";
 
 const logger = winston.createLogger({
-  level: isProduction ? 'info' : 'debug',
+  level: isProduction ? "info" : "debug",
   format: isProduction
     ? winston.format.json()
-    : winston.format.combine(winston.format.colorize(), winston.format.simple()),
+    : winston.format.combine(
+        winston.format.colorize(),
+        winston.format.simple(),
+      ),
   transports: [new winston.transports.Console()],
 });
 
@@ -138,8 +143,8 @@ module.exports = logger;
 ### Using Winston Inside Express
 
 ```js
-const express = require('express');
-const logger = require('./logger');
+const express = require("express");
+const logger = require("./logger");
 
 const app = express();
 
@@ -148,16 +153,16 @@ app.use((req, res, next) => {
   next();
 });
 
-app.get('/error-test', (req, res, next) => {
-  next(new Error('Something failed'));
+app.get("/error-test", (req, res, next) => {
+  next(new Error("Something failed"));
 });
 
 app.use((err, req, res, next) => {
   logger.error(err.message, { stack: err.stack });
-  res.status(500).json({ error: 'Internal Server Error' });
+  res.status(500).json({ error: "Internal Server Error" });
 });
 
-app.listen(3000, () => logger.info('Server started on port 3000'));
+app.listen(3000, () => logger.info("Server started on port 3000"));
 ```
 
 ## Combining Morgan + Winston
@@ -165,14 +170,14 @@ app.listen(3000, () => logger.info('Server started on port 3000'));
 A common production pattern: pipe Morgan's HTTP logs through Winston, so all logging (requests + app events) goes to one unified destination/format.
 
 ```js
-const morgan = require('morgan');
-const logger = require('./logger');
+const morgan = require("morgan");
+const logger = require("./logger");
 
 const stream = {
   write: (message) => logger.http(message.trim()),
 };
 
-app.use(morgan('combined', { stream }));
+app.use(morgan("combined", { stream }));
 ```
 
 This requires adding an `http` level to your Winston logger config (npm levels already include it).
@@ -186,19 +191,26 @@ const logger = winston.createLogger({
   format: winston.format.combine(
     winston.format.timestamp(),
     winston.format.errors({ stack: true }),
-    winston.format.json()
+    winston.format.json(),
   ),
-  defaultMeta: { service: 'my-express-app' },
+  defaultMeta: { service: "my-express-app" },
   transports: [new winston.transports.Console()],
 });
 
-logger.info('User created', { userId: 42, email: 'alice@example.com' });
+logger.info("User created", { userId: 42, email: "alice@example.com" });
 ```
 
 Output:
 
 ```json
-{"level":"info","message":"User created","service":"my-express-app","timestamp":"2026-07-15T10:00:00.000Z","userId":42,"email":"alice@example.com"}
+{
+  "level": "info",
+  "message": "User created",
+  "service": "my-express-app",
+  "timestamp": "2026-07-15T10:00:00.000Z",
+  "userId": 42,
+  "email": "alice@example.com"
+}
 ```
 
 ## Common Interview-Style Questions

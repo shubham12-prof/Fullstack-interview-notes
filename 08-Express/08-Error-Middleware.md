@@ -7,7 +7,7 @@ Error-handling middleware is defined with **four arguments** instead of three: `
 ```js
 function errorHandler(err, req, res, next) {
   console.error(err.stack);
-  res.status(500).json({ error: 'Something went wrong' });
+  res.status(500).json({ error: "Something went wrong" });
 }
 ```
 
@@ -16,15 +16,15 @@ function errorHandler(err, req, res, next) {
 Error-handling middleware must be registered **last**, after all other `app.use()` and route calls.
 
 ```js
-const express = require('express');
+const express = require("express");
 const app = express();
 
-app.get('/', (req, res) => {
-  res.send('Home');
+app.get("/", (req, res) => {
+  res.send("Home");
 });
 
-app.get('/fail', (req, res, next) => {
-  next(new Error('Deliberate failure'));
+app.get("/fail", (req, res, next) => {
+  next(new Error("Deliberate failure"));
 });
 
 // error middleware — must be last
@@ -41,26 +41,26 @@ app.listen(3000);
 ### 1. Calling `next(err)`
 
 ```js
-app.get('/user/:id', (req, res, next) => {
+app.get("/user/:id", (req, res, next) => {
   if (!isValidId(req.params.id)) {
-    return next(new Error('Invalid ID format')); // skips to error middleware
+    return next(new Error("Invalid ID format")); // skips to error middleware
   }
-  res.send('valid user');
+  res.send("valid user");
 });
 ```
 
 ### 2. Synchronous throws (caught automatically, Express 4+)
 
 ```js
-app.get('/sync-error', (req, res) => {
-  throw new Error('Sync error thrown directly'); // Express catches this automatically
+app.get("/sync-error", (req, res) => {
+  throw new Error("Sync error thrown directly"); // Express catches this automatically
 });
 ```
 
 ### 3. Asynchronous errors (must be forwarded manually in Express 4)
 
 ```js
-app.get('/async-error', async (req, res, next) => {
+app.get("/async-error", async (req, res, next) => {
   try {
     await someAsyncOperation();
   } catch (err) {
@@ -86,13 +86,13 @@ class AppError extends Error {
 }
 
 class NotFoundError extends AppError {
-  constructor(message = 'Resource not found') {
+  constructor(message = "Resource not found") {
     super(message, 404);
   }
 }
 
 class ValidationError extends AppError {
-  constructor(message = 'Invalid input') {
+  constructor(message = "Invalid input") {
     super(message, 400);
   }
 }
@@ -103,11 +103,11 @@ module.exports = { AppError, NotFoundError, ValidationError };
 Usage:
 
 ```js
-const { NotFoundError } = require('./errors');
+const { NotFoundError } = require("./errors");
 
-app.get('/users/:id', async (req, res, next) => {
+app.get("/users/:id", async (req, res, next) => {
   const user = await db.findUser(req.params.id);
-  if (!user) return next(new NotFoundError('User not found'));
+  if (!user) return next(new NotFoundError("User not found"));
   res.json(user);
 });
 ```
@@ -117,7 +117,7 @@ app.get('/users/:id', async (req, res, next) => {
 ```js
 function errorHandler(err, req, res, next) {
   const statusCode = err.statusCode || 500;
-  const message = err.isOperational ? err.message : 'Internal Server Error';
+  const message = err.isOperational ? err.message : "Internal Server Error";
 
   console.error({
     message: err.message,
@@ -129,7 +129,7 @@ function errorHandler(err, req, res, next) {
   res.status(statusCode).json({
     success: false,
     error: message,
-    ...(process.env.NODE_ENV === 'development' && { stack: err.stack }),
+    ...(process.env.NODE_ENV === "development" && { stack: err.stack }),
   });
 }
 
@@ -139,7 +139,7 @@ module.exports = errorHandler;
 `app.js`:
 
 ```js
-const errorHandler = require('./middleware/errorHandler');
+const errorHandler = require("./middleware/errorHandler");
 
 // ...all routes...
 
@@ -183,13 +183,13 @@ app.use(formatError);
 Express error middleware only catches errors **within** the request-response cycle. Catch process-level failures separately:
 
 ```js
-process.on('uncaughtException', (err) => {
-  console.error('Uncaught Exception:', err);
+process.on("uncaughtException", (err) => {
+  console.error("Uncaught Exception:", err);
   process.exit(1); // restart via process manager (PM2, Docker, etc.)
 });
 
-process.on('unhandledRejection', (reason) => {
-  console.error('Unhandled Rejection:', reason);
+process.on("unhandledRejection", (reason) => {
+  console.error("Unhandled Rejection:", reason);
   process.exit(1);
 });
 ```

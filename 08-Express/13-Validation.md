@@ -15,17 +15,19 @@ Validation should happen **before** business logic runs — typically as middlew
 Simple but tedious and error-prone at scale:
 
 ```js
-app.post('/users', (req, res, next) => {
+app.post("/users", (req, res, next) => {
   const { name, email, age } = req.body;
 
-  if (!name || typeof name !== 'string') {
-    return res.status(400).json({ error: 'name is required and must be a string' });
+  if (!name || typeof name !== "string") {
+    return res
+      .status(400)
+      .json({ error: "name is required and must be a string" });
   }
   if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    return res.status(400).json({ error: 'valid email is required' });
+    return res.status(400).json({ error: "valid email is required" });
   }
-  if (age !== undefined && (typeof age !== 'number' || age < 0)) {
-    return res.status(400).json({ error: 'age must be a positive number' });
+  if (age !== undefined && (typeof age !== "number" || age < 0)) {
+    return res.status(400).json({ error: "age must be a positive number" });
   }
 
   next(); // passes to the route handler
@@ -41,15 +43,23 @@ npm install express-validator
 ```
 
 ```js
-const { body, param, query, validationResult } = require('express-validator');
+const { body, param, query, validationResult } = require("express-validator");
 
 app.post(
-  '/users',
+  "/users",
   [
-    body('name').trim().notEmpty().withMessage('Name is required'),
-    body('email').isEmail().withMessage('Must be a valid email').normalizeEmail(),
-    body('age').optional().isInt({ min: 0 }).withMessage('Age must be a positive integer'),
-    body('password').isLength({ min: 8 }).withMessage('Password must be at least 8 characters'),
+    body("name").trim().notEmpty().withMessage("Name is required"),
+    body("email")
+      .isEmail()
+      .withMessage("Must be a valid email")
+      .normalizeEmail(),
+    body("age")
+      .optional()
+      .isInt({ min: 0 })
+      .withMessage("Age must be a positive integer"),
+    body("password")
+      .isLength({ min: 8 })
+      .withMessage("Password must be at least 8 characters"),
   ],
   (req, res, next) => {
     const errors = validationResult(req);
@@ -59,15 +69,15 @@ app.post(
     next();
   },
   (req, res) => {
-    res.status(201).json({ message: 'User created', data: req.body });
-  }
+    res.status(201).json({ message: "User created", data: req.body });
+  },
 );
 ```
 
 ### Reusable Validation Middleware
 
 ```js
-const { validationResult } = require('express-validator');
+const { validationResult } = require("express-validator");
 
 const validate = (req, res, next) => {
   const errors = validationResult(req);
@@ -81,26 +91,30 @@ module.exports = validate;
 ```
 
 ```js
-router.post('/users', [
-  body('email').isEmail(),
-  body('name').notEmpty(),
-], validate, userController.createUser);
+router.post(
+  "/users",
+  [body("email").isEmail(), body("name").notEmpty()],
+  validate,
+  userController.createUser,
+);
 ```
 
 ### Validating Route Params and Query Strings
 
 ```js
-router.get('/users/:id',
-  param('id').isMongoId().withMessage('Invalid user ID'),
+router.get(
+  "/users/:id",
+  param("id").isMongoId().withMessage("Invalid user ID"),
   validate,
-  userController.getUserById
+  userController.getUserById,
 );
 
-router.get('/products',
-  query('page').optional().isInt({ min: 1 }),
-  query('limit').optional().isInt({ min: 1, max: 100 }),
+router.get(
+  "/products",
+  query("page").optional().isInt({ min: 1 }),
+  query("limit").optional().isInt({ min: 1, max: 100 }),
   validate,
-  productController.list
+  productController.list,
 );
 ```
 
@@ -113,11 +127,11 @@ npm install zod
 ```
 
 ```js
-const { z } = require('zod');
+const { z } = require("zod");
 
 const createUserSchema = z.object({
-  name: z.string().min(1, 'Name is required'),
-  email: z.string().email('Invalid email'),
+  name: z.string().min(1, "Name is required"),
+  email: z.string().email("Invalid email"),
   age: z.number().int().positive().optional(),
 });
 
@@ -125,15 +139,17 @@ function validateBody(schema) {
   return (req, res, next) => {
     const result = schema.safeParse(req.body);
     if (!result.success) {
-      return res.status(400).json({ errors: result.error.flatten().fieldErrors });
+      return res
+        .status(400)
+        .json({ errors: result.error.flatten().fieldErrors });
     }
     req.body = result.data; // parsed & coerced data
     next();
   };
 }
 
-app.post('/users', validateBody(createUserSchema), (req, res) => {
-  res.status(201).json({ message: 'Created', data: req.body });
+app.post("/users", validateBody(createUserSchema), (req, res) => {
+  res.status(201).json({ message: "Created", data: req.body });
 });
 ```
 
@@ -144,7 +160,7 @@ npm install joi
 ```
 
 ```js
-const Joi = require('joi');
+const Joi = require("joi");
 
 const userSchema = Joi.object({
   name: Joi.string().min(2).max(50).required(),
@@ -157,7 +173,7 @@ function validate(schema) {
     const { error, value } = schema.validate(req.body, { abortEarly: false });
     if (error) {
       return res.status(400).json({
-        errors: error.details.map(d => d.message),
+        errors: error.details.map((d) => d.message),
       });
     }
     req.body = value;
@@ -165,15 +181,15 @@ function validate(schema) {
   };
 }
 
-app.post('/users', validate(userSchema), (req, res) => {
+app.post("/users", validate(userSchema), (req, res) => {
   res.status(201).json({ data: req.body });
 });
 ```
 
 ## Sanitization vs Validation
 
-- **Validation** checks that data *meets requirements* (e.g., is a valid email).
-- **Sanitization** *transforms* data to a safe/clean format (e.g., trimming whitespace, escaping HTML, normalizing casing).
+- **Validation** checks that data _meets requirements_ (e.g., is a valid email).
+- **Sanitization** _transforms_ data to a safe/clean format (e.g., trimming whitespace, escaping HTML, normalizing casing).
 
 ```js
 body('email').trim().normalizeEmail(),
@@ -183,19 +199,19 @@ body('bio').trim().escape(), // escapes HTML special characters — helps preven
 ## Validating File Uploads
 
 ```js
-const multer = require('multer');
+const multer = require("multer");
 const upload = multer({
   limits: { fileSize: 2 * 1024 * 1024 }, // 2MB
   fileFilter: (req, file, cb) => {
-    const allowed = ['image/png', 'image/jpeg'];
+    const allowed = ["image/png", "image/jpeg"];
     if (!allowed.includes(file.mimetype)) {
-      return cb(new Error('Only PNG/JPEG images are allowed'));
+      return cb(new Error("Only PNG/JPEG images are allowed"));
     }
     cb(null, true);
   },
 });
 
-app.post('/upload', upload.single('avatar'), (req, res) => {
+app.post("/upload", upload.single("avatar"), (req, res) => {
   res.json({ file: req.file });
 });
 ```

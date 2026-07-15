@@ -4,10 +4,10 @@
 
 MVC (**Model–View–Controller**) is an architectural pattern that separates an application into three interconnected layers:
 
-| Layer | Responsibility |
-|---|---|
-| **Model** | Data and business logic — database schemas, queries, validation rules |
-| **View** | Presentation layer — what the user sees (HTML/templates, or JSON for APIs) |
+| Layer          | Responsibility                                                                    |
+| -------------- | --------------------------------------------------------------------------------- |
+| **Model**      | Data and business logic — database schemas, queries, validation rules             |
+| **View**       | Presentation layer — what the user sees (HTML/templates, or JSON for APIs)        |
 | **Controller** | Glue layer — receives requests, calls models, decides which view/response to send |
 
 For REST APIs, "View" is often just the JSON response shape rather than a rendered template.
@@ -18,9 +18,11 @@ Without structure, everything ends up crammed into `app.js`:
 
 ```js
 // BAD: everything in one file
-app.get('/users/:id', async (req, res) => {
-  const user = await db.query('SELECT * FROM users WHERE id = ?', [req.params.id]);
-  if (!user) return res.status(404).json({ error: 'not found' });
+app.get("/users/:id", async (req, res) => {
+  const user = await db.query("SELECT * FROM users WHERE id = ?", [
+    req.params.id,
+  ]);
+  if (!user) return res.status(404).json({ error: "not found" });
   res.json(user);
 });
 ```
@@ -54,22 +56,22 @@ src/
 `models/userModel.js` (using a simple query builder / ORM-style example):
 
 ```js
-const db = require('../config/db');
+const db = require("../config/db");
 
 class UserModel {
   static async findAll() {
-    return db.query('SELECT id, name, email FROM users');
+    return db.query("SELECT id, name, email FROM users");
   }
 
   static async findById(id) {
-    const [rows] = await db.query('SELECT * FROM users WHERE id = ?', [id]);
+    const [rows] = await db.query("SELECT * FROM users WHERE id = ?", [id]);
     return rows[0] || null;
   }
 
   static async create({ name, email }) {
     const [result] = await db.query(
-      'INSERT INTO users (name, email) VALUES (?, ?)',
-      [name, email]
+      "INSERT INTO users (name, email) VALUES (?, ?)",
+      [name, email],
     );
     return { id: result.insertId, name, email };
   }
@@ -81,14 +83,17 @@ module.exports = UserModel;
 With Mongoose (MongoDB), the model would instead be a schema:
 
 ```js
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
-const userSchema = new mongoose.Schema({
-  name: { type: String, required: true },
-  email: { type: String, required: true, unique: true },
-}, { timestamps: true });
+const userSchema = new mongoose.Schema(
+  {
+    name: { type: String, required: true },
+    email: { type: String, required: true, unique: true },
+  },
+  { timestamps: true },
+);
 
-module.exports = mongoose.model('User', userSchema);
+module.exports = mongoose.model("User", userSchema);
 ```
 
 ## Controller Layer
@@ -96,7 +101,7 @@ module.exports = mongoose.model('User', userSchema);
 `controllers/userController.js`:
 
 ```js
-const UserModel = require('../models/userModel');
+const UserModel = require("../models/userModel");
 
 exports.getAllUsers = async (req, res, next) => {
   try {
@@ -110,7 +115,7 @@ exports.getAllUsers = async (req, res, next) => {
 exports.getUserById = async (req, res, next) => {
   try {
     const user = await UserModel.findById(req.params.id);
-    if (!user) return res.status(404).json({ error: 'User not found' });
+    if (!user) return res.status(404).json({ error: "User not found" });
     res.json(user);
   } catch (err) {
     next(err);
@@ -134,14 +139,14 @@ Controllers contain **no direct database queries** and **no route definitions** 
 `routes/userRoutes.js`:
 
 ```js
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const userController = require('../controllers/userController');
-const authenticate = require('../middleware/auth');
+const userController = require("../controllers/userController");
+const authenticate = require("../middleware/auth");
 
-router.get('/', userController.getAllUsers);
-router.get('/:id', userController.getUserById);
-router.post('/', authenticate, userController.createUser);
+router.get("/", userController.getAllUsers);
+router.get("/:id", userController.getUserById);
+router.post("/", authenticate, userController.createUser);
 
 module.exports = router;
 ```
@@ -151,14 +156,14 @@ module.exports = router;
 `app.js`:
 
 ```js
-const express = require('express');
-const userRoutes = require('./routes/userRoutes');
-const errorHandler = require('./middleware/errorHandler');
+const express = require("express");
+const userRoutes = require("./routes/userRoutes");
+const errorHandler = require("./middleware/errorHandler");
 
 const app = express();
 app.use(express.json());
 
-app.use('/api/users', userRoutes);
+app.use("/api/users", userRoutes);
 
 app.use(errorHandler); // last
 
@@ -168,7 +173,7 @@ module.exports = app;
 `server.js`:
 
 ```js
-const app = require('./app');
+const app = require("./app");
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server on port ${PORT}`));
 ```
@@ -181,7 +186,7 @@ If rendering HTML instead of JSON, the controller calls `res.render()`:
 exports.showProfile = async (req, res, next) => {
   try {
     const user = await UserModel.findById(req.params.id);
-    res.render('users/profile', { user }); // renders views/users/profile.ejs
+    res.render("users/profile", { user }); // renders views/users/profile.ejs
   } catch (err) {
     next(err);
   }
@@ -201,11 +206,11 @@ models/       -> raw data access
 `services/userService.js`:
 
 ```js
-const UserModel = require('../models/userModel');
+const UserModel = require("../models/userModel");
 
 exports.registerUser = async ({ name, email, password }) => {
   const existing = await UserModel.findByEmail(email);
-  if (existing) throw new Error('Email already in use');
+  if (existing) throw new Error("Email already in use");
 
   const hashedPassword = await hash(password);
   return UserModel.create({ name, email, password: hashedPassword });
@@ -215,7 +220,7 @@ exports.registerUser = async ({ name, email, password }) => {
 `controllers/userController.js`:
 
 ```js
-const userService = require('../services/userService');
+const userService = require("../services/userService");
 
 exports.register = async (req, res, next) => {
   try {

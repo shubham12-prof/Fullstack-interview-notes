@@ -11,14 +11,14 @@ npm install compression
 ## Basic Usage
 
 ```js
-const express = require('express');
-const compression = require('compression');
+const express = require("express");
+const compression = require("compression");
 
 const app = express();
 
 app.use(compression());
 
-app.get('/large-data', (req, res) => {
+app.get("/large-data", (req, res) => {
   res.json(generateLargeDataset()); // automatically gzip-compressed
 });
 
@@ -37,16 +37,18 @@ The browser sends `Accept-Encoding: gzip, deflate, br`, and if the middleware de
 ## Configuration Options
 
 ```js
-app.use(compression({
-  level: 6,            // compression level 0 (none) - 9 (max, slower)
-  threshold: 1024,      // only compress responses larger than 1KB (default)
-  filter: (req, res) => {
-    if (req.headers['x-no-compression']) {
-      return false; // allow clients to opt out
-    }
-    return compression.filter(req, res); // default filter (checks Content-Type)
-  },
-}));
+app.use(
+  compression({
+    level: 6, // compression level 0 (none) - 9 (max, slower)
+    threshold: 1024, // only compress responses larger than 1KB (default)
+    filter: (req, res) => {
+      if (req.headers["x-no-compression"]) {
+        return false; // allow clients to opt out
+      }
+      return compression.filter(req, res); // default filter (checks Content-Type)
+    },
+  }),
+);
 ```
 
 ### `threshold`
@@ -60,12 +62,14 @@ Higher levels compress better but use more CPU. Level 6 is a good default balanc
 ## Excluding Certain Routes from Compression
 
 ```js
-app.use(compression({
-  filter: (req, res) => {
-    if (req.path.startsWith('/stream')) return false; // don't compress streaming responses
-    return compression.filter(req, res);
-  },
-}));
+app.use(
+  compression({
+    filter: (req, res) => {
+      if (req.path.startsWith("/stream")) return false; // don't compress streaming responses
+      return compression.filter(req, res);
+    },
+  }),
+);
 ```
 
 ## Compression and Already-Compressed Content
@@ -73,8 +77,8 @@ app.use(compression({
 Don't bother compressing content that's already compressed (images, videos, zip files) — it wastes CPU with negligible size benefit. The default `filter` already skips most binary/already-compressed MIME types, but be mindful when serving custom binary content.
 
 ```js
-app.get('/image', (req, res) => {
-  res.set('Content-Encoding', 'identity'); // explicitly skip compression for this response
+app.get("/image", (req, res) => {
+  res.set("Content-Encoding", "identity"); // explicitly skip compression for this response
   res.sendFile(imagePath);
 });
 ```
@@ -89,9 +93,9 @@ In many production setups, compression is handled by a **reverse proxy** (Nginx,
 ## Example: Combined with Other Middleware
 
 ```js
-const express = require('express');
-const compression = require('compression');
-const helmet = require('helmet');
+const express = require("express");
+const compression = require("compression");
+const helmet = require("helmet");
 
 const app = express();
 
@@ -99,7 +103,7 @@ app.use(helmet());
 app.use(compression());
 app.use(express.json());
 
-app.get('/api/report', (req, res) => {
+app.get("/api/report", (req, res) => {
   res.json({ data: buildLargeReport() }); // compressed automatically if large enough
 });
 
