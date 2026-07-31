@@ -34,23 +34,108 @@ PHASE 2 : JAVASCRIPT
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 3.  JavaScript
+
+    Fundamentals
     ├── Variables
     ├── Data Types
+    ├── Type Conversion
+    ├── Operators
+    ├── Expressions
+    ├── Control Flow
+    ├── Loops
+    ├── Functions
+    ├── Arrow Functions
+    ├── Default Parameters
+    ├── Rest Operator
+    ├── Spread Operator
+
+    Objects & Arrays
+    ├── Objects
+    ├── Arrays
+    ├── Destructuring
+    ├── Object Methods
+    ├── Array Methods
+    │ ├── map
+    │ ├── filter
+    │ ├── reduce
+    │ ├── find
+    │ ├── some
+    │ ├── every
+    │ ├── flat
+    │ └── sort
+
+    Execution
     ├── Scope
+    ├── Lexical Environment
     ├── Hoisting
+    ├── TDZ
     ├── Execution Context
     ├── Call Stack
+
+    Advanced JS
     ├── Closures
     ├── this Keyword
+    ├── Bind
+    ├── Call
+    ├── Apply
     ├── Prototype
+    ├── Prototype Chain
+    ├── Classes
+    ├── Inheritance
+    ├── Encapsulation
+    ├── Polymorphism
+
+    Async JavaScript
     ├── Event Loop
+    ├── Web APIs
+    ├── Callback Queue
+    ├── Microtask Queue
     ├── Promises
+    ├── Promise Methods
     ├── Async Await
     ├── Fetch API
+    ├── AbortController
+
+    Browser APIs
+    ├── DOM
+    ├── BOM
+    ├── LocalStorage
+    ├── SessionStorage
+    ├── Cookies
+    ├── History API
+
+    Optimization
     ├── Debounce
     ├── Throttle
-    ├── Memory Management
-    ├── ES6+
+    ├── Memoization
+    ├── Lazy Loading
+    ├── Tree Shaking
+
+    Memory
+    ├── Garbage Collection
+    ├── Memory Leaks
+    ├── WeakMap
+    ├── WeakSet
+
+    ES6+
+    ├── Modules
+    ├── Symbols
+    ├── Iterators
+    ├── Generators
+    ├── Optional Chaining
+    ├── Nullish Coalescing
+
+    Error Handling
+    ├── try catch
+    ├── throw
+    ├── Custom Errors
+
+    Design Patterns
+    ├── Module Pattern
+    ├── Singleton
+    ├── Factory
+    ├── Observer
+
     └── Interview Questions
 
             ↓
@@ -60,13 +145,40 @@ PHASE 3 : TYPESCRIPT
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 4.  TypeScript
-    ├── Types
+    ├── Why TypeScript
+    ├── Installation
+    ├── tsconfig
+    ├── Primitive Types
+    ├── Object Types
+    ├── Arrays
+    ├── Tuples
+    ├── Enums
+    ├── Any
+    ├── Unknown
+    ├── Never
+    ├── Void
+    ├── Literal Types
+    ├── Union Types
+    ├── Intersection Types
+    ├── Type Narrowing
+    ├── Type Guards
     ├── Interfaces
     ├── Type Aliases
+    ├── Functions
     ├── Generics
+    ├── Generic Constraints
     ├── Utility Types
-    ├── Enums
+    │ ├── Partial
+    │ ├── Required
+    │ ├── Pick
+    │ ├── Omit
+    │ ├── Record
+    │ ├── Readonly
+    │ └── ReturnType
     ├── Modules
+    ├── Declaration Files
+    ├── Decorators
+    ├── Advanced Types
     └── Interview Questions
 
             ↓
@@ -76,27 +188,56 @@ PHASE 4 : REACT
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 5.  React
-    ├── JSX
-    ├── Components
-    ├── Props
-    ├── State
-    ├── Lifecycle
+    ├── React Fundamentals
+    │ ├── Virtual DOM
+    │ ├── JSX
+    │ ├── Components
+    │ ├── Props
+    │ ├── State
+    │ ├── Event Handling
+    │ ├── Conditional Rendering
+    │ ├── Lists & Keys
+    │ └── Forms
+    ├── Component Lifecycle
     ├── Hooks
-    ├── useState
-    ├── useEffect
-    ├── useLayoutEffect
-    ├── useMemo
-    ├── useCallback
-    ├── useRef
+    │ ├── useState
+    │ ├── useEffect
+    │ ├── useLayoutEffect
+    │ ├── useMemo
+    │ ├── useCallback
+    │ ├── useRef
+    │ ├── useReducer
+    │ ├── useContext
+    │ ├── useTransition
+    │ ├── useDeferredValue
+    │ ├── useId
+    │ └── Custom Hooks
     ├── Context API
+    ├── State Management
+    │ ├── Redux Toolkit
+    │ ├── Zustand
+    │ ├── TanStack Query
+    │ └── Context API
+    ├── Routing
+    ├── React Router
+    ├── Code Splitting
+    ├── Lazy Loading
+    ├── Suspense
+    ├── Error Boundaries
     ├── React.memo
-    ├── Fiber
+    ├── Memoization
     ├── Reconciliation
+    ├── Fiber Architecture
     ├── Concurrent Rendering
-    ├── Performance
+    ├── Server Components (Concept)
+    ├── Rendering Process
+    ├── Performance Optimization
+    ├── Testing
+    │ ├── Jest
+    │ ├── RTL
+    │ └── Cypress
     └── Interview Questions
-
-            ↓
+    ↓
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 PHASE 5 : NEXT.JS
