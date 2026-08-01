@@ -244,16 +244,37 @@ PHASE 5 : NEXT.JS
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 6.  Next.js
+    ├── Introduction
     ├── App Router
-    ├── Server Components
-    ├── Client Components
-    ├── Routing
+    ├── File Based Routing
+    ├── Dynamic Routes
+    ├── Nested Routes
+    ├── Route Groups
     ├── Layouts
-    ├── Metadata
-    ├── API Routes
+    ├── Templates
+    ├── Loading UI
+    ├── Error UI
+    ├── Metadata API
+    ├── Fonts
+    ├── Images
+    ├── Link Component
+    ├── Navigation
+    ├── Client Components
+    ├── Server Components
+    ├── Server Actions
+    ├── Data Fetching
+    ├── Fetch Cache
+    ├── Revalidation
+    ├── ISR
+    ├── SSR
+    ├── SSG
+    ├── Streaming
     ├── Middleware
-    ├── Caching
-    ├── Rendering
+    ├── API Routes
+    ├── Authentication
+    ├── NextAuth
+    ├── Deployment
+    ├── Performance
     └── Interview Questions
 
             ↓
